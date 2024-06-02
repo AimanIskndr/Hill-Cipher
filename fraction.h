@@ -12,26 +12,15 @@ struct Fraction {
     int denominator;
 
     Fraction(string num){
-        size_t pos = num.find('/');
-        if(pos != string::npos){
-            numerator = stoi(num.substr(0, pos));
-            denominator = stoi(num.substr(pos + 1));
-        }
-        else{
-            numerator = stoi(num);
-            denominator = 1;
-        }
-        simplify();
+        set_frac(num);
     }
 
     Fraction(int n = 0, int d = 1){
-        numerator = n;
-        denominator = d;
-        simplify();
+        set_frac(n, d);
     }
 
     void simplify(){
-        int gcd = std::__gcd(numerator, denominator);
+        int gcd = __gcd(numerator, denominator);
         numerator /= gcd;
         denominator /= gcd;
         if(denominator < 0){
@@ -58,13 +47,26 @@ struct Fraction {
         return Fraction(num, denom);
     }
 
-    void set(int n, int d){
+    void set_frac(int n, int d){
         numerator = n;
         denominator = d;
         simplify();
     }
 
-    double get(){
+    void set_frac(string num){
+        size_t pos = num.find('/');
+        if(pos != string::npos){
+            numerator = stoi(num.substr(0, pos));
+            denominator = stoi(num.substr(pos + 1));
+        }
+        else{
+            numerator = stoi(num);
+            denominator = 1;
+        }
+        simplify();
+    }
+
+    double get() const{
         return 1.0 * numerator / denominator;
     }
 
@@ -73,6 +75,13 @@ struct Fraction {
         if(frac.denominator != 1)
             out << "/" << frac.denominator;
         return out;
+    }
+
+    friend istream& operator>>(istream& is, Fraction& frac) {
+        string input;
+        is >> input;
+        frac.set_frac(input);
+        return is;
     }
 };
 
