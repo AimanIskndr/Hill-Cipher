@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-typedef vector<vector<double>> Matrix;
+typedef vector<vector<int>> Matrix;
 
 void printMatrix(const Matrix &key){
     for(const auto &row : key){
@@ -40,7 +40,7 @@ string to_text(Matrix& cipher){
     string str = "";
     for(int j = 0; j < n; j++){
         for(int i = 0; i < m; i++){
-            int offset = (((int)(round(cipher[i][j])) % 27) + 27) % 27;
+            int offset = (((cipher[i][j]) % 27) + 27) % 27;
             if(offset < 26){
                 char ch = ('a' + offset);
                 str += ch;
@@ -58,13 +58,14 @@ Matrix multiply_matrix(const Matrix &A, const Matrix &B) {
     int m = B.size();
     int n = B[0].size();
 
-    Matrix Ans(m, vector<double>(n));
+    Matrix Ans(m, vector<int>(n));
 
     for(int i = 0; i < m; i++){
         for(int j = 0; j < n; j++){
             Ans[i][j] = 0;
             for(int k = 0; k < m; ++k){
-                Ans[i][j] += A[i][k] * B[k][j];
+                Ans[i][j] += (((A[i][k] + 27) % 27) * (B[k][j] % 27)) % 27;
+                Ans[i][j] %= 27;
             }
         }
     }
@@ -109,20 +110,29 @@ int det(const Matrix& A){
     return determinant;
 }
 
+int modInverse(int a, int m){
+    a = a % m;
+    for(int x = -m; x < m; x++)
+        if ((a * x) % m == 1)
+            return x;
+    return -1; // If no modular inverse exists
+}
+
 void inverse_matrix(Matrix& A){
     int n = A.size();
-    float detA = det(A);
+    int detA = det(A);
 
     if (detA == 0)
         throw runtime_error("Matrix is singular and cannot be inverted.");
 
-    Matrix invA(n, vector<double>(n));
+    Matrix invA(n, vector<int>(n));
+    int modInv = modInverse(detA, 27);
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             Matrix subA = find_submatrix(A, i, j);
             int cofactor = det(subA);
-            invA[j][i] = (cofactor * ((i + j) % 2 == 0 ? 1 : -1)) / detA;
+            invA[j][i] = ((cofactor * ((i + j) % 2 == 0 ? 1 : -1)) * modInv) % 27;
         }
     }
 
@@ -156,7 +166,7 @@ string encode(string text, Matrix& key){
     int m = key.size();
     int n = (text.length() + m - 1) / m;
 
-    Matrix plain(m, vector<double>(n));
+    Matrix plain(m, vector<int>(n));
     to_matrix(plain, text);
 
     Matrix cipher = multiply_matrix(key, plain);
@@ -169,7 +179,7 @@ string decode(string text, Matrix& key){
     int m = key.size();
     int n = (text.length() + m - 1) / m;
 
-    Matrix cipher(m, vector<double>(n));
+    Matrix cipher(m, vector<int>(n));
     to_matrix(cipher, text);
 
     inverse_matrix(key);
@@ -193,7 +203,7 @@ int main(){
         cin >> n;
     }
 
-    Matrix key(n, vector<double>(n));
+    Matrix key(n, vector<int>(n));
     cout << "Enter the key matrix:\n";
     get_key(key, n);
 
