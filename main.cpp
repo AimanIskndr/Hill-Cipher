@@ -127,7 +127,6 @@ void inverse_matrix(Matrix& A){
 
     Matrix invA(n, vector<int>(n));
     int modInv = modInverse(detA, 27);
-
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             Matrix subA = find_submatrix(A, i, j);
@@ -139,7 +138,7 @@ void inverse_matrix(Matrix& A){
     for(int i = 0; i < n; i++)
         for(int j = 0; j < n; j++)
             A[i][j] = invA[i][j];
-        
+    cout << modInv;
     return;
 }
 
@@ -195,36 +194,21 @@ string decode(string text, Matrix& key){
 }
 
 int main(){
-
-    string text;
-    cout << "Enter the text: ";
-    getline(cin, text);
-    transform(text.begin(), text.end(), text.begin(), ::tolower);
-
-    int n = -1;
-    cout << "Enter the key size (2 to 5): ";
-    cin >> n;
-    while(n < 2){
-        cout << "Invalid key size!\nEnter the key size (2 to 5): ";
-        cin >> n;
-    }
-
-    Matrix key(n, vector<int>(n));
-    cout << "Enter the key matrix:\n";
-    get_key(key, n);
-
-    int operation = -1;
-    cout << "1. Encode\n2. Decode\nSelect operation (Enter 1 or 2): ";
-    cin >> operation;
-    while(operation != 1 && operation != 2){
-        cout << "Invalid operation code!\n1. Encode\n2. Decode\nSelect operation (Enter 1 or 2): ";
-        cin >> operation;
-    }
-
-    if(operation == 1)
-        cout << "Encoded text:\n" << encode(text, key);
-    else
-        cout << "Decoded text:\n" << decode(text, key);
-
+    Matrix A(2, vector<int>(6));
+    to_matrix(A, "hello world");
+    printMatrix(A);
+    
+    Matrix key = {{5, -3}, {-4, 2}};
+    printMatrix(key);
+    
+    Matrix B = multiply_matrix(key, A);
+    printMatrix(B);
+    
+    inverse_matrix(key);
+    printMatrix(key);
+    
+    Matrix C = multiply_matrix(key,B);
+    printMatrix(C);
+    
     return 0;
 }
