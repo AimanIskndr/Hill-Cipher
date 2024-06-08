@@ -163,6 +163,8 @@ void get_key(Matrix& key, int n){
 
 string encode(string text, Matrix& key){
 
+    transform(text.begin(), text.end(), text.begin(), ::tolower);
+
     int m = key.size();
     int n = (text.length() + m - 1) / m;
 
@@ -185,7 +187,11 @@ string decode(string text, Matrix& key){
     inverse_matrix(key);
     Matrix plain = multiply_matrix(key, cipher);
     
-    return to_text(plain);
+    string decoded = to_text(plain);
+    replace(decoded.begin(), decoded.end(), '_', ' ');
+    decoded.erase(decoded.find_last_not_of(" ") + 1);
+
+    return decoded;
 }
 
 int main(){
