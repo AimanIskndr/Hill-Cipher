@@ -1,2 +1,2 @@
-# Hill-Cipher
-CSCI 3303: Mathematics for Computing III (Linear Algebra)
+# Hill-Cipher + Caesar-Cipher
+CSCI 3302: DATA STRUCTURES AND ALGORITHMS II
