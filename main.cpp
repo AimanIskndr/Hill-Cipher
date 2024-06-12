@@ -156,12 +156,26 @@ void get_key(Matrix& key, int n){
     }
 }
 
+void shift(int rot, string& str){
+    int offset;
+    for (int i = 0; i < str.length(); i++){
+        offset = ((((str[i] == '_' ? 26 : str[i] - 'a') + rot) % 27) + 27) % 27;
+        if (offset < 26) {
+            char ch = ('a' + offset);
+            str[i] = ch;
+        } else{
+            str[i] = '_';
+        }
+    }
+}
+
     /* Notes for reference
     key matrix size: m x m
     text matrix size: m x n
     */
-
 string encode(string text, Matrix& key){
+    
+    int detA = det(key);
 
     transform(text.begin(), text.end(), text.begin(), ::tolower);
 
@@ -173,10 +187,16 @@ string encode(string text, Matrix& key){
 
     Matrix cipher = multiply_matrix(key, plain);
     
-    return to_text(cipher);
+    string ciphertext = to_text(cipher);
+    shift(detA, ciphertext);
+
+    return ciphertext;
 }
 
 string decode(string text, Matrix& key){
+
+    int detA = det(key);
+    shift(-detA, text);
 
     int m = key.size();
     int n = (text.length() + m - 1) / m;
